@@ -1,0 +1,5 @@
+package com.akcode.limitservice.model;
+
+public class MaxMin {
+
+}

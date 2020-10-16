@@ -1,0 +1,5 @@
+package com.akcode.currencyexchange.repository;
+
+public class CurrExRepo {
+
+}

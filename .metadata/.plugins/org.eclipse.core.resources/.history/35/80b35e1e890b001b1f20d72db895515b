@@ -1,0 +1,12 @@
+package com.akcode.limitservice.controller;
+
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class HomeController {
+	
+	@GetMapping("/limits")
+	public MaxMin getData() {
+		return new MaxMin(10,20);
+	}
+}

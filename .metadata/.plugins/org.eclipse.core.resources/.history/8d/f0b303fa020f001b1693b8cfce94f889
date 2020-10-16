@@ -1,0 +1,4 @@
+spring.application.name=currency-conversion
+server.port=8887
+
+currency-conversion.ribbon.listOfServers=http://localhost:8889,http://localhost:8886

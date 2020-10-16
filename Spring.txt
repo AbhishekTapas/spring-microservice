@@ -1,0 +1,313 @@
+Constructor Injections
+Setter Injections
+Field Injections
+
+Use @Qualifer in all 3 injection ....
+
+@Autowire
+----------------
+It injects the property/bean in to the current bean from the live bean present in the application context (Controller of Spring)
+
+if there are 2 beans:
+<bean id="bean1"></bean>
+<bean id="bean2"></bean>
+
+After using @Autowire in the bean1 for bean2:
+<bean id="bean1">
+	<property name="bean2" value="anyVal"></property>
+</bean>
+
+
+@Qualifier("")
+------------------
+Helps to differenciate in multiple autowiring 
+
+@Scope("singleton")
+@Scope("prototype")
+
+@Bean
+Creates a bean in the config file ...
+
+@PropertySource("properties file")
+@Value
+
+SPRING MVC
+---------------
+@Controller - for controller
+
+Traditinal Spring Problems
+----------------------------
+CORE
+MVC
+DAO
+ORM
+
+Use XML and annotations
+
+Advantages
+--------------
+MVC
+ORM
+
+DispatcherServlet
+DataSource
+TransactionManager
+
+SPRING BOOT STARTER 
+- Module Avaliablity, Version Compartiblity
+
+SPRING-BOOT-STARTED-PARENT has all of them (versions)
+
+SPRING-BOOT-STARTER-WEB for web developers
+
+SPRING-BOOT-STATER-DATA-JPA for hybernate
+
+lots of health 
+---------------
+SPRING BOOT ACTUATORS
+
+spring-boot-starter-parent contains BOM (Bill Of Materials) where all the librarie need to run spring are defined 
+like hibernate, tomcat and Jackson
+
+spring-boot-starter
+contains dependances that are needed for spring
+
+@SpringBootApplication
+- class where the spring starts
+- he inherits many other annotations
+- 1st 3 are key annotations
+- @SpringBootConfrigation - tell the class may have several bean definations (@Bean)
+- @EnableAutoConfriagtions - tell the spring run of the dependancies that are pulled by spring-boot-starter
+
+for ex, MySQL, automatically spring will configure (uname, passwd etc)
+
+@ComponentScan - scan the class
+by default it will scan the classes
+
+SpringAppication.run(ClassWithMain.class,args)
+
+Testing
+-----------
+@RunWith(ClassWithMain.class)
+- testing for the mentioned class
+
+@SpringBootTest
+search for class with spring boot marked with 
+- then use that class for Junit
+
+Spring Data JPA
+-------------------
+Java Persistent API
+for tools like hiberbate
+for object relational mapping
+CRUD - create Read Update Delete
+
+There are dulicates code for EntityManagement
+To avoid this we will use JPA
+
+spring-boot-starter-data-jpa
+
+have to include Driver
+<dependancy>
+<artifactId>h2
+
+REST 
+------------
+Representational State Transfer
+
+For CRUD
+Create Read Update Delete
+
+Its uses HTTP services
+It provides Uniform Interface and Easy Access
+
+HTTP Methods/Verbs : 	POST, GET, PUT, DELETE
+URL / URL : /employees, /department -> Nouns - > Collections 
+	if ID is there -> Item Resources -> /employee/1
+
+CREATE
+POST request /employees
+
+READ
+GET /employees/1
+
+UPDATE - PUT - for full update
+PATCH - for partial update
+
+Support Multiple Formats - json , xml
+
+=================================================================================
+MICROSERVICE
+----------------
+
+Currency Conversion Service -> Currency Exchange service -> limit service -> Spring Cloud
+
+Setting Limit Service
+model -			MaxMin Class
+Controller 	- 	/limits
+Port - 			8088
+name -			limit-service 
+url-			http://localhost:8088/limits
+
+-- Get data from properties file
+set the data in the properties file
+#limit-service.max=4000
+#limit-service.min=40
+add @Configration and @ConfigrationProperties("limitservice") on the MaxMin Class
+use getter methods on controller
+
+----------------------------------------------------------------------------------------------
+
+SETTING SPRING CLOUD CONFIG
+add spring-cloud-config-server
+create local git
+change the application.properties and add the local git server uri
+add limit-service.properties to the folder where you have .git
+http://localhost:8888/limit-service/default
+
+add limit-service-dev.properties and limit-service-qa.properties
+http://localhost:8888/limit-service/qa
+http://localhost:8888/limit-service/dev
+
+-- Connect the limit service to spring cloud
+change the application.properties file of the limit-service to bootstrap.properties
+in it add....spring.cloud.config.uri=http://localhost:8888
+http://localhost:8088/limitconf
+
+-- active profile in limit service (dev/qa)
+spring.profiles.active=dev
+http://localhost:8088/limitconf
+
+-----------------------------------------------------------------------------------------------
+
+SETTING THE CURRENCY EXCHANGE SERVICE
+port = 8889
+name = currency-exchange
+Adding the MongoDB 
+
+SETTING THE CURRENCY CONVERSION SERVICE
+port = 8887
+name = currency-conversion
+
+Calling CurrExchange Service from CurrConv Service
+use the URL of CurrExchange
+	Map<String, String> toFromMap = new HashMap<>();
+		toFromMap.put("from", from);
+		toFromMap.put("to", to);
+		
+		ResponseEntity<CurrConv> forEntity = new RestTemplate().getForEntity("http://localhost:8889/curr-ex2/from/{from}/to/{to}", 
+						CurrConv.class,
+						toFromMap);
+		
+		CurrConv body = forEntity.getBody();
+
+
+the model's data member's name should be same in both the services
+
+
+--- Using Feign to communicate in service
+<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-openfeign</artifactId>
+		</dependency>
+Add @EnableFeignClient on MainApp application
+Create a proxy for feign
+Use that get response
+
+--- Setting Ribbon to do load banceing in feign ...
+add the dependancy of ribbon
+@RibbionClient("") on ProxyClass
+service.ribbion.listOfServer=list of URLs
+
+-- Starting Naming Server (to use dynamic localhost for exchange service)
+-- Eureka Naming service
+Add dependancy for Eureka
+@EnableEurekaServer
+port=8885
+eureka.client.register-with-eureka=false
+eureka.client.fetch-registry=false
+http://localhost:8885/ - for console
+
+-- Connecting Eureka to curr-conversion service
+add Eureka client dependancy
+@EnableDiscoveryClient
+eureka.client.service-url.defaultZone=http://localhost:8885/eureka
+
+-- Connecting Eureka to curr-exchange service
+Same Way
+
+-- setting zulu API Gatway
+authentication and security
+fault tolerance
+limit request
+etc ...
+
+@EnableZuulProxy
+@EnableDiscoveryClient
+extends ZuulFilter - @Componet
+connect to eureka
+
+Run at last of all other services ...
+http://localhost:8884/{application name preseent in eureka server}/curr-cov2/from/INF/to/BBB/qua/100
+http://localhost:8884/currency-conversion/curr-cov2/from/INF/to/BBB/qua/100
+
+-- Connecting to Sleuth
+Unique Idenetification of Microservice
+For finding a paticular problem in a paticular micro service
+
+add dependancy
+add this in the main application
+@Bean
+	public Sampler defaultSampler() {
+		return Sampler.ALWAYS_SAMPLE; 
+	}
+we have to do similar thing for curr-exchange and curr-conversion
+You will find the find the IDs in the log ...
+
+-- Connection to Distrubuted tracing system
+Using Zipkin and RabbitMQ
+Centralized logging ...
+
+install erlang
+install rabbitMQ
+
+run zipkin using a .sh file to download the jar
+
+run the rabbitMQ server
+using the server.bat file in rabbitMQ
+
+run the zipkin server
+set RABBIT_URL=ampd://localhost
+java -jar zipkin.jar
+http://localhost:9411/zipkin/
+
+<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-zipkin</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.amqp</groupId>
+			<artifactId>spring-rabbit</artifactId>
+		</dependency>
+
+use these dependacy in those service where you want to have a centralized tracing system
+
+Run all service and see the Zipkin server
+
+-- Connecting to cloud bus
+For refeshing a change that you did in spring cloud we have to use all url
+to avoid that we need a cloud bus
+
+add rabbit MQ dependancy to limit-service
+
+do
+http://localhost:8088/bus-refresh as POST
+after
+git commit
+
+-- Using Hystrix for fault tolerance
+add denpendancy
+
+
+https://github.com/criskrzysiu/in28minutes-spring-microservices

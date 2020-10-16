@@ -1,0 +1,5 @@
+spring.application.name=currency-conversion
+server.port=8887
+
+eureka.client.service-url.defaultZone=http://localhost:8885/eureka
+currency-conversion.ribbon.listOfServers=http://localhost:8889,http://localhost:8886

@@ -1,0 +1,67 @@
+package com.akcode.currencyexchange.model;
+
+import javax.annotation.Generated;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document
+public class CurrExchange {
+	
+	@Id
+	private int id;
+	private int from;
+	private int to;
+	private int exValue;
+	private int port;
+	
+	public CurrExchange() {
+		
+	}
+	
+	public CurrExchange(int id, int from, int to, int exValue) {
+		super();
+		this.id = id;
+		this.from = from;
+		this.to = to;
+		this.exValue = exValue;
+	}
+	
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public int getExValue() {
+		return exValue;
+	}
+
+	public void setExValue(int exValue) {
+		this.exValue = exValue;
+	}
+
+	public int getFrom() {
+		return from;
+	}
+	public void setFrom(int from) {
+		this.from = from;
+	}
+	public int getTo() {
+		return to;
+	}
+	public void setTo(int to) {
+		this.to = to;
+	}
+	
+}
